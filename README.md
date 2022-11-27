@@ -1,0 +1,2 @@
+This contains tutorial codes i guess
+you can just learn c++ by reading basic codes since there are comments beside every strange terms like for example; fprintf() // write into file. it's parameters: (stream, )
