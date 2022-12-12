@@ -1,1 +1,1 @@
-Everythingi learned and will learn about c++.
+Everything I learned and will learn about c++.
