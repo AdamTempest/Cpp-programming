@@ -16,16 +16,17 @@ struct db loaded[SIZE];
 
 /*------- Essential Tools -------*/
 int countChar(char toCount[50]);
-int findLongest(char* arr[3][50]);
+int findLongest(struct char2dArr data[SIZE]);
 bool diyStrCmp(char str1[50],char str2[50]);
 void assignArrayToArray(char arr1[50],char *arr2);
 
 /*---------- Display -----------*/
 void printArray(char arr[50],int start, int end);
 void addChar(char arr[50],char toAdd,int longest);
-void line(int sum);
+void drawLine(int sum);
 void header(int nameLen,int mailLen,int pwdLen);
-void sectorLine(int nameLen,int mailLen,int pwdLen);;
+void sectorLine(int nameLen,int mailLen,int pwdLen);
+void drawEmptyRow(int nameLen,int mailLen,int pwdLen);
 void createAndPrintTable(struct db data[SIZE]);
 void printData(struct db toPrint[SIZE]);
 
@@ -54,9 +55,8 @@ int main()
 		menu();
 		recordToDB();
 		loadData();
+		printData(loaded);
 	}
-
-	printData(loaded);
 
 	return 0;
 }
@@ -100,6 +100,12 @@ void registerForm(){
 
 		cout << "Enter age: ";
 		scanf("%d",&info[i].age);
+		while (info[i].age>1000 || info[i].age<=0){
+			cout << "[x] Invalid age."<<endl;
+			cout << "    Age must be within the range of 1 to 100."<<endl;
+			cout << "    Reenter age: ";
+			scanf("%d",&info[i].age);
+		}
 
 		cout << "Enter email: ";
 		scanf(" %[^\n]",&mail);
@@ -293,26 +299,24 @@ void printArray(char arr[50],int start,int end){
 	}
 }
 
-void addChar(char arr[50],char toAdd,int longest){
-	int length = countChar(arr);
+void addChar(char arr[50],int length,char toAdd,int longest){
 	for (int i=0;i<length;i++){
 		cout << arr[i];
 	}
-	for (int i=length;i<longest;i++){
+	for (int i=length;i<=longest;i++){
 		cout << toAdd;
 	}
 }
 
-// {
-// [id,age,name,email,password],
-// [id,age,name,email,password],
-// [id,age,name,email,password]
-// }
-int findLongest(char* arr[3][50]){
+struct char2dArr {
+  char arr[50];	
+};
+
+int findLongest(struct char2dArr data[SIZE]){
 	int longest=0;
 	int len=0;
 	for (int i=0;i<3;i++){
-		len = countChar(*arr[i]);
+		len = countChar(data[i].arr);
 		if (len > longest){
 			longest = len;
 		}
@@ -320,73 +324,122 @@ int findLongest(char* arr[3][50]){
 	return longest;
 }
 
-void line(int sum){
+void drawLine(int sum){
 	cout << "++";
-	for (int i=0;i<sum+14;i++){
+	for (int i=0;i<sum+20;i++){
 		cout << "=";
 	}
 	cout << "++" << endl;
 }
 
 void header(int nameLen,int mailLen,int pwdLen){
+	char space = ' ';
 	cout << "|| ID  | ";
-	char name[4] = {'N','a','m','e'};
-	addChar(name,' ',nameLen);
+	if (nameLen<=4){
+		cout << "Name";
+	} else{
+		char name[4] = {'N','a','m','e'};
+		addChar(name,4,space,nameLen);
+	}
 	cout << " | Age | ";
 	char email[5] = {'E','m','a','i','l'};
-	addChar(email,' ',mailLen);
-	cout << " | ";
+	addChar(email,5,space,mailLen);
+	cout << "| ";
 	char pwdArr[8] = {'P','a','s','s','w','o','r','d'};
-	addChar(pwdArr,' ',pwdLen);
-	cout << " ||" << endl;
+	addChar(pwdArr,8,space,pwdLen);
+	cout << "||" << endl;
 }
 
 void sectorLine(int nameLen,int mailLen,int pwdLen){
-	cout <<"||";
+	cout <<"||-----|";
 	char dash[1] = {'-'};
-	addChar(dash,'-',nameLen+2);
+	char d = '-';
+	addChar(dash,1,d,nameLen+1);
 	cout << "|-----|";
-	addChar(dash,'-',mailLen+2);            cout << "|";
-	addChar(dash,'-',pwdLen+2);             cout << "||" << endl;
+	addChar(dash,1,d,mailLen+1);            cout << "|";
+	addChar(dash,1,d,pwdLen+1);             cout << "||" << endl;
+}
+
+void drawEmptyRow(int nameLen,int mailLen,int pwdLen){
+	char space[1] = {' '};
+	cout << "||     | ";
+	addChar(space,1,' ',nameLen);
+	cout << "|";       //name
+	cout << "     |";  // age
+	addChar(space,1,' ',mailLen);          
+	cout << " |";//email
+	addChar(space,1,' ',pwdLen);           
+	cout << " ||" << endl;	
 }
 
 void createAndPrintTable(struct db data[SIZE])
 {
 	// find longest length
-	char* names[3][50] = {data[0].name,data[1].name,data[2].name};
-	char* mails[3][50] = {data[0].email,data[1].email,data[2].email};
-	char* pwds [3][50] = {data[0].password,data[1].password,data[2].password};
-	int nameLen = findLongest(names);
-	int mailLen = findLongest(mails);
-	int pwdLen  = findLongest(pwds);
 	
+	// struct char2dArr names[3]    = {*data[0].name,*data[1].name,*data[2].name};
+	// struct char2dArr mails[3]   = {*data[0].email,*data[1].email,*data[2].email};
+	// struct char2dArr pwds[3]    = {*data[0].password,*data[1].password,*data[2].password};
+	// int nameLen = findLongest(names);
+	// int mailLen = findLongest(mails);
+	// int pwdLen  = findLongest(pwds);
+
+	int nameLen=0;
+	int len=0;
+	for (int i=0;i<3;i++){
+		len = countChar(data[i].name);
+		if (len > nameLen){
+			nameLen = len;
+		}
+	}
+
+	int mailLen=0;
+	len=0;
+	for (int i=0;i<3;i++){
+		len = countChar(data[i].email);
+		if (len > mailLen){
+			mailLen = len;
+		}
+	}
+
+	int pwdLen =0;
+	len=0;
+	for (int i=0;i<3;i++){
+		len = countChar(data[i].password);
+		if (len > pwdLen){
+			pwdLen = len;
+		}
+	}
 	
-
-	// cout << "++========================================================++" << endl;
-	// cout << "|| ID  | Name     | Age | Email           | Password      ||" << endl;
-	// cout << "||-----|----------|-----|-----------------|---------------||" << endl;
-
-	// header
-	line(nameLen+mailLen+pwdLen);
+	int sum = nameLen+mailLen+pwdLen;
+	drawLine(sum);
 	header(nameLen,mailLen,pwdLen);
 	sectorLine(nameLen,mailLen,pwdLen);
 	
-	char space[1] = {' '};
 	for (int i=0;i<SIZE;i++)
 	{
-		                                     cout << "||  ";
-		                                     cout << data[i].id << "  | ";
-		addChar(data[i].name,' ',nameLen);   cout << "| ";
-		                                     cout << data[i].age << "| ";
-		addChar(data[i].email,' ',mailLen);  cout << "| ";
-		addChar(data[i].password,' ',pwdLen);cout << "||" << endl;
-		                                     cout << "||     |"; // id
-		addChar(space,' ',nameLen);          cout << "|"; //name
-                                             cout << "     |";  // age
-		addChar(space,' ',mailLen);          cout << "|";//email
-		addChar(space,' ',pwdLen);           cout << "||" << endl;
+		                                     
+		cout << "||  ";
+		cout << data[i].id << "  | "; // id
+		addChar(data[i].name,countChar(data[i].name),' ',nameLen);   
+		
+		cout << "| "; cout << data[i].age;
+		if (data[i].age>=100){
+			cout << " | ";
+		} else{
+			cout << "  | ";
+		}
+		
+		addChar(data[i].email,countChar(data[i].email) ,' ',mailLen);  
+		cout << "| ";
+		
+		addChar(data[i].password, countChar(data[i].password),' ',pwdLen);
+		cout << "||" << endl; 
+
+		// ||     |    |     |                    |        ||
+		drawEmptyRow(nameLen,mailLen,pwdLen);
+		
 	}
-	cout << "++=======================================================++" << endl;
+	drawLine(sum);
 }
 
 
@@ -394,15 +447,15 @@ void printData(struct db toPrint[SIZE]){
 
 	createAndPrintTable(toPrint);
 
-    for(int gcc=0; gcc< SIZE ; gcc++ )
-    {
-    	cout << endl;
-    	cout << "   Id       : " << toPrint[gcc].id       << endl;
-        cout << "   name     : " << toPrint[gcc].name     << endl;
-		cout << "   age      : " << toPrint[gcc].age      << endl;
-		cout << "   email    : " << toPrint[gcc].email    << endl;
-		cout << "   password : " << toPrint[gcc].password << endl << endl;
-    }
+    // for(int gcc=0; gcc< SIZE ; gcc++ )
+    // {
+    // 	cout << endl;
+    // 	cout << "   Id       : " << toPrint[gcc].id       << endl;
+    //     cout << "   name     : " << toPrint[gcc].name     << endl;
+	// 	cout << "   age      : " << toPrint[gcc].age      << endl;
+	// 	cout << "   email    : " << toPrint[gcc].email    << endl;
+	// 	cout << "   password : " << toPrint[gcc].password << endl << endl;
+    // }
 }
 
 
