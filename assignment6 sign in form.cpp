@@ -14,12 +14,16 @@ struct db{
 struct db info[SIZE];
 struct db loaded[SIZE];
 
-/*------- tool functions -------*/
+/*------- Essential Tools -------*/
 int countChar(char toCount[50]);
-void printData(struct db toPrint[SIZE]);
 bool diyStrCmp(char str1[50],char str2[50]);
-void display(char arr[50],int start, int end);
 void assignArrayToArray(char arr1[50],char *arr2);
+
+/*---------- Display -----------*/
+void display(char arr[50],int start, int end);
+void printData(struct db toPrint[SIZE]);
+void createTable(struct db data[SIZE]);
+
 
 /*------ Mail Validation -------*/
 int isValid(char mail[50]);
