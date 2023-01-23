@@ -14,19 +14,26 @@ struct db{
 struct db info[SIZE];
 struct db loaded[SIZE];
 
-void display(char arr[50],int start, int end);
-bool diyStrCmp(char str1[50],char str2[50]);
+/*------- tool functions -------*/
 int countChar(char toCount[50]);
+void printData(struct db toPrint[SIZE]);
+bool diyStrCmp(char str1[50],char str2[50]);
+void display(char arr[50],int start, int end);
 void assignArrayToArray(char arr1[50],char *arr2);
+
+/*------ Mail Validation -------*/
 int isValid(char mail[50]);
 int isDuplicate(char email[50]);
-void printData(struct db toPrint[SIZE]);
 void check(char *mail);
+
+/*--- Reading and Writing DB ---*/
+void recordToDB();
+void loadData();
+
+/*------ main functions ------*/
 void registerForm();
 void login();
 void menu();
-void recordToDB();
-void loadData();
 
 
 int main()
@@ -112,7 +119,7 @@ void login(){
 
     if(eFound >= 0){
     	for (int i=0;i<3;i++){ // only 3 attempts are allowed.
-    		cout << "Enter your password: ";
+    		cout << "  Enter your password: ";
 	    	scanf(" %[^\n]",&loginPwd);
 	    	if (diyStrCmp(info[eFound].password,loginPwd)){
 	    		cout << "<<<< Successful Login >>>>" << endl;
@@ -245,7 +252,6 @@ int isDuplicate(char email[50])
 			}
         }
     }
-    cout << "This shit doesn't have duplicates." << endl;
     return -1;
 }
 
@@ -315,6 +321,7 @@ void recordToDB(){
         for (int gcc=0;gcc<SIZE;gcc++){
             fprintf(fp,"%d %d %s %s %s \n", info[gcc].id, info[gcc].age, info[gcc].name, info[gcc].email,info[gcc].password);
         }
+        fclose(fp);
         cout << "[+] Recorded the data to UserData.txt" << endl;
     }
 }
@@ -331,5 +338,6 @@ void loadData(){
     			break;
     		}
     	}
+    	fclose(fp);
     }
 }
