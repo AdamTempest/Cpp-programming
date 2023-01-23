@@ -16,13 +16,18 @@ struct db loaded[SIZE];
 
 /*------- Essential Tools -------*/
 int countChar(char toCount[50]);
+int findLongest(char* arr[3][50]);
 bool diyStrCmp(char str1[50],char str2[50]);
 void assignArrayToArray(char arr1[50],char *arr2);
 
 /*---------- Display -----------*/
-void display(char arr[50],int start, int end);
+void printArray(char arr[50],int start, int end);
+void addChar(char arr[50],char toAdd,int longest);
+void line(int sum);
+void header(int nameLen,int mailLen,int pwdLen);
+void sectorLine(int nameLen,int mailLen,int pwdLen);;
+void createAndPrintTable(struct db data[SIZE]);
 void printData(struct db toPrint[SIZE]);
-void createTable(struct db data[SIZE]);
 
 
 /*------ Mail Validation -------*/
@@ -47,10 +52,10 @@ int main()
 		printData(loaded);	
 	} else{
 		menu();
+		recordToDB();
+		loadData();
 	}
 
-	recordToDB();
-	loadData();
 	printData(loaded);
 
 	return 0;
@@ -184,7 +189,7 @@ int isValid(char mail[50]){
 	}
 	if (length < 10) {
 		cout << "[x] Your Gmail \"";
-		display(mail,0,length);
+		printArray(mail,0,length);
 		cout << "\" is invalid !" << endl;
 		return 0;
 	}
@@ -200,11 +205,11 @@ int isValid(char mail[50]){
 			{
 				cout << endl;
 				cout << "[x] Your Gmail \"" << mail << "\" is invalid !" << endl;
-				// display(mail,0,length);
+				// printArray(mail,0,length);
 				// cout << "\" is invalid !" << endl;
 
 				cout << "[x] There must be a 'gmail.com' after '@' NOT '";
-				display(mail,i+1,length); 
+				printArray(mail,i+1,length); 
 				cout << "'" << endl << endl;
 				
 				return 0;
@@ -220,7 +225,7 @@ int isValid(char mail[50]){
 				cout << "[x] Your Gmail \"" << mail << "\" is invalid !" << endl;
 				
 				cout << "[x] There must be a 'gmail.com' after '@' NOT '";
-				display(mail,atSymbol+1,length); 
+				printArray(mail,atSymbol+1,length); 
 				cout << "'" << endl << endl;
 				
 				return 0;
@@ -260,12 +265,6 @@ int isDuplicate(char email[50])
 }
 
 
-void display(char arr[50],int start,int end){
-	for (int i=start;i<end;i++){
-		cout << arr[i];
-	}
-}
-
 void assignArrayToArray(char arr1[50],char *arr2){
 	for (int i=0;arr1[i]!='\0';i++){
 		arr2[i] = arr1[i];
@@ -288,10 +287,112 @@ int countChar(char toCount[50])
     return charCount;
 }
 
+void printArray(char arr[50],int start,int end){
+	for (int i=start;i<end;i++){
+		cout << arr[i];
+	}
+}
 
+void addChar(char arr[50],char toAdd,int longest){
+	int length = countChar(arr);
+	for (int i=0;i<length;i++){
+		cout << arr[i];
+	}
+	for (int i=length;i<longest;i++){
+		cout << toAdd;
+	}
+}
+
+// {
+// [id,age,name,email,password],
+// [id,age,name,email,password],
+// [id,age,name,email,password]
+// }
+int findLongest(char* arr[3][50]){
+	int longest=0;
+	int len=0;
+	for (int i=0;i<3;i++){
+		len = countChar(*arr[i]);
+		if (len > longest){
+			longest = len;
+		}
+	}
+	return longest;
+}
+
+void line(int sum){
+	cout << "++";
+	for (int i=0;i<sum+14;i++){
+		cout << "=";
+	}
+	cout << "++" << endl;
+}
+
+void header(int nameLen,int mailLen,int pwdLen){
+	cout << "|| ID  | ";
+	char name[4] = {'N','a','m','e'};
+	addChar(name,' ',nameLen);
+	cout << " | Age | ";
+	char email[5] = {'E','m','a','i','l'};
+	addChar(email,' ',mailLen);
+	cout << " | ";
+	char pwdArr[8] = {'P','a','s','s','w','o','r','d'};
+	addChar(pwdArr,' ',pwdLen);
+	cout << " ||" << endl;
+}
+
+void sectorLine(int nameLen,int mailLen,int pwdLen){
+	cout <<"||";
+	char dash[1] = {'-'};
+	addChar(dash,'-',nameLen+2);
+	cout << "|-----|";
+	addChar(dash,'-',mailLen+2);            cout << "|";
+	addChar(dash,'-',pwdLen+2);             cout << "||" << endl;
+}
+
+void createAndPrintTable(struct db data[SIZE])
+{
+	// find longest length
+	char* names[3][50] = {data[0].name,data[1].name,data[2].name};
+	char* mails[3][50] = {data[0].email,data[1].email,data[2].email};
+	char* pwds [3][50] = {data[0].password,data[1].password,data[2].password};
+	int nameLen = findLongest(names);
+	int mailLen = findLongest(mails);
+	int pwdLen  = findLongest(pwds);
+	
+	
+
+	// cout << "++========================================================++" << endl;
+	// cout << "|| ID  | Name     | Age | Email           | Password      ||" << endl;
+	// cout << "||-----|----------|-----|-----------------|---------------||" << endl;
+
+	// header
+	line(nameLen+mailLen+pwdLen);
+	header(nameLen,mailLen,pwdLen);
+	sectorLine(nameLen,mailLen,pwdLen);
+	
+	char space[1] = {' '};
+	for (int i=0;i<SIZE;i++)
+	{
+		                                     cout << "||  ";
+		                                     cout << data[i].id << "  | ";
+		addChar(data[i].name,' ',nameLen);   cout << "| ";
+		                                     cout << data[i].age << "| ";
+		addChar(data[i].email,' ',mailLen);  cout << "| ";
+		addChar(data[i].password,' ',pwdLen);cout << "||" << endl;
+		                                     cout << "||     |"; // id
+		addChar(space,' ',nameLen);          cout << "|"; //name
+                                             cout << "     |";  // age
+		addChar(space,' ',mailLen);          cout << "|";//email
+		addChar(space,' ',pwdLen);           cout << "||" << endl;
+	}
+	cout << "++=======================================================++" << endl;
+}
 
 
 void printData(struct db toPrint[SIZE]){
+
+	createAndPrintTable(toPrint);
 
     for(int gcc=0; gcc< SIZE ; gcc++ )
     {
