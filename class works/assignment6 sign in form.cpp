@@ -205,6 +205,11 @@ int isValid(char mail[50]){
 	for(int i=0;i<length;i++)
 	{
 		char e = mail[i];
+		if (e == ' '){
+			cout << "[x] Your Gmail \"" << mail << "\" is invalid !" << endl;
+			cout << "    There shouldn't be a space in the gmail!" << endl;
+			return 0;
+		}
 		if (e == '@')
 		{
 			if (length - i != 10)
